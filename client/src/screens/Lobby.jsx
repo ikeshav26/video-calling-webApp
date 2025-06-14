@@ -1,13 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { use, useCallback, useEffect, useState } from 'react'
 import { useSocket } from '../context/SocketProvider'
+import { useNavigate } from 'react-router-dom'
 
 const Lobby = () => {
   const [email, setemail] = useState("")
   const [room, setroom] = useState("")
   const socket=useSocket()
 
+  const navigate=useNavigate()
+
 const handleJoinRoom=useCallback((data)=>{
   const {email,room}=data
+  navigate(`/room/${room}`)
     console.log("User joined room:", email,room);
 })
 

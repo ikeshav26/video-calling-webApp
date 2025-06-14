@@ -15,10 +15,23 @@ io.on("connection",(socket)=>{
         const {email,room}=data
         emailToSocketMap.set(email,socket.id)
         socketToEmailMap.set(socket.id,email)
+        io.to(room).emit("user:joined",{
+            email,id:socket.id
+        })
+        socket.join(room)
         io.to(socket.id).emit("room:join",{
             email,
             room,
             message:`${email} has joined the room`
+        })
+    })
+
+
+    socket.on("user:call",({to,offer})=>{
+        io.to(to).emit("incoming:call",{
+            offer,
+            from:socket.id,
+            email:socketToEmailMap.get(socket.id)
         })
     })
 })
