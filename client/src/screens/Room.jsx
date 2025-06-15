@@ -23,19 +23,32 @@ const Room = () => {
         setmyStream(stream)
     })
 
-
-    const handleIncomingCall=useCallback(async({from,offer,email})=>{
-        console.log("Incoming call from:", email, from,offer);
+    const handleCallAccepted=useCallback(async({ans,from})=>{
+      await peer.peer.setRemoteDescription(new RTCSessionDescription(ans))
+      console.log("Call accepted from:", from, ans);
     })
+
+    const handleIncomingCall = useCallback(async ({ from, offer: incomingOffer, email }) => {
+  setremoteId(from);
+  const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  setmyStream(stream);
+  console.log("Incoming call from:", email, from, incomingOffer);
+  
+  const ans = await peer.getAnswer(incomingOffer);
+  socket.emit("call:accepted", { to: from, ans });
+}, [socket]);
+
 
     useEffect(() => {
     socket.on("user:joined",handleuserJoined)
     socket.on("incoming:call",handleIncomingCall)
+    socket.on("call:accepted",handleCallAccepted)
     return()=>{
         socket.off("user:joined",handleuserJoined)
         socket.off("incoming:call",handleIncomingCall)
+        socket.off("call:accepted",handleCallAccepted)
     }
-    }, [socket,handleuserJoined])
+    }, [socket,handleuserJoined,handleIncomingCall,handleCallAccepted])
 
 
   return (

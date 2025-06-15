@@ -34,4 +34,11 @@ io.on("connection",(socket)=>{
             email:socketToEmailMap.get(socket.id)
         })
     })
+
+    socket.on("call:accepted",({to,ans})=>{
+        io.to(to).emit("call:accepted",{
+            ans,
+            from:socket.id
+        })
+    })
 })
