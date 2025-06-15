@@ -1,4 +1,4 @@
-import React, { use, useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useSocket } from '../context/SocketProvider'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,24 +9,23 @@ const Lobby = () => {
 
   const navigate=useNavigate()
 
-const handleJoinRoom=useCallback((data)=>{
-  const {email,room}=data
-  navigate(`/room/${room}`)
+  const handleJoinRoom=useCallback((data)=>{
+    const {email,room}=data
+    navigate(`/room/${room}`)
     console.log("User joined room:", email,room);
-})
+  })
 
   useEffect(() => {
-  socket.on("room:join",handleJoinRoom )
-  return()=>{
-    socket.off("room:join",handleJoinRoom)}
+    socket.on("room:join",handleJoinRoom )
+    return()=>{
+      socket.off("room:join",handleJoinRoom)
+    }
   }, [socket])
-
 
   const submitHandler=useCallback((e)=>{
     e.preventDefault()
     socket.emit("room:join",{email,room})
   },[email,room,socket])
-
 
   return (
     <div className='flex flex-col  items-center min-h-screen w-full bg-zinc-900 gap-6 py-2'>
